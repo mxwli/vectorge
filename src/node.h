@@ -1,3 +1,5 @@
+#ifndef NODE_H
+#define NODE_H
 #include <raymath.h>
 
 typedef struct Node2D Node;
@@ -36,4 +38,4 @@ void setOffset(Node* node, Vector2 newpos);
 
 void pushNode(Node* node, Vector2 offset);
 
-
+#endif
