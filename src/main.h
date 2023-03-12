@@ -10,6 +10,7 @@
 #define SETTINGS 2
 
 void initializeVars();
+void destructVars();
 
 void drawFrame();
 

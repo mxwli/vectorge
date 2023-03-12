@@ -20,6 +20,12 @@ void remNode(Node* nde) {
 }
 
 Node* addChild(Node* node) {
+	Node* ret = newNode(0, 0, 0, 0);
+	appendChild(node, ret);
+	return ret;
+}
+
+void appendChild(Node* node, Node* child) {
 	if(node->size == node->cap) {
 		node->children = realloc(node->children, 2*node->cap*sizeof(Node*)+1);
 		for(int i = node->cap; i < node->cap*2+1; i++) node->children[i] = NULL;
@@ -27,9 +33,9 @@ Node* addChild(Node* node) {
 	}
 	
 	int ret = node->size; (node->size)++;
-	node->children[ret] = newNode(0, 0, 0, node);
+	node->children[ret] = child;
 
-	return node->children[ret];
+	return;
 }
 
 void removeChild(Node* node, Node* child) {

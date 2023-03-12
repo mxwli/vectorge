@@ -9,6 +9,7 @@
 
 #include"main.h"
 #include"node.h"
+#include"game.h"
 
 
 int WindowState = MAINMENU;
@@ -27,7 +28,8 @@ int main() {
 #endif
 	
 	CloseWindow();
-	remNode(headNode);
+	destructVars();
+
 	return 0;
 }
 
@@ -43,4 +45,8 @@ void drawFrame() {
 	
 
 	EndDrawing();
+}
+
+void destructVars() {
+	
 }

@@ -1,7 +1,7 @@
 
 cc=gcc
 
-../bin/run.bin: main.o node.o
+../bin/run.bin: main.o node.o advvec.o game.o
 	cc main.o node.o -lraylib -ldl -lm -o ../bin/run.bin
 
 clean:
@@ -16,3 +16,9 @@ main.o: main.c main.h
 
 node.o: node.c node.h
 	cc -c node.c -o node.o
+
+advvec.o: advvec.c advvec.h
+	cc -c advvec.c -o advvec.o
+
+game.o: game.c game.h
+	cc -c game.c -o game.o
