@@ -1,10 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <raylib.h>
+#include <string.h>
+#include <stdlib.h>
 #include "node.h"
 #include "advvec.h"
-#include <raylib.h>
-#include <raymath.h>
 
 typedef struct Node2D Wall;
 //A wall is a node whose children make up its vertecies.
@@ -14,7 +15,7 @@ typedef struct EntityStruct Entity;
 struct EntityStruct {
 	Node* loc;
 	Vector2 vel; //velocity, affected by parent rotation
-	double radius; //radius of entity - all entities are circles
+	float radius; //radius of entity - all entities are circles
 
 //entity data
 
@@ -22,7 +23,7 @@ struct EntityStruct {
 	//classification data
 
 
-	double maxHP, HP, decayHP;
+	float maxHP, HP, decayHP, damage;
 	int invincible;
 	//hit point values
 	
@@ -35,7 +36,9 @@ struct EntityStruct {
 	
 };
 
-void entityTick(Entity* ent);
+Entity* blankEntity(Node* loc, float rad);
+
+void entityTick(Entity* ent, float f);
 //updates entity one tick. call this after normalizevectors!!
 
 void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize);

@@ -40,9 +40,29 @@ void initializeVars() {
 void drawFrame() {
 	BeginDrawing();
 	ClearBackground(DARKGRAY);
-	DrawFPS(10, 10);
-
 	
+	if(WindowState == MAINMENU) {
+		char* welcome = "VectorGE";
+		int fontsize = 200;
+		int width = MeasureText(welcome, fontsize);
+		DrawText(welcome, WindowWidth/2-width/2, WindowHeight/2-300, fontsize, WHITE);
+
+		DrawText("Click anywhere.", WindowWidth/2-width/2, WindowHeight/2, 50, WHITE);
+
+		
+	}
+	else if (WindowState == INGAME) {
+		
+	}
+	else if (WindowState == SETTINGS) {
+		
+	}
+	else if (WindowState == PAUSE) {
+		
+	}
+	else if (WindowState == EDITOR) {
+		
+	}
 
 	EndDrawing();
 }

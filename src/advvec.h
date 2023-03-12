@@ -21,4 +21,6 @@ double distance(Vector2 x, Vector2 y1, Vector2 y2);
 Vector2 projection(Vector2 A, Vector2 B);
 //projection of A onto B
 
+float fclamp(float min, float max, float val);
+
 #endif

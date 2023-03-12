@@ -1,8 +1,8 @@
 #define USESSHORTFORM
-#include "advvec.h"
+
 #include <math.h>
 #include <stdlib.h>
-
+#include "advvec.h"
 
 float _cp(Vector2 v1, Vector2 v2) {
 	return v1.x*v2.y-v1.y*v2.x;
@@ -46,4 +46,10 @@ double distance(Vector2 x, Vector2 y1, Vector2 y2) {
 Vector2 projection(Vector2 A, Vector2 B) {
 	float projlength = _dp(A, B) / Vector2Length(B);
 	return Vector2Scale(B, projlength/Vector2Length(B));
+}
+
+float fclamp(float min, float max, float val) {
+	if(val < min) return min;
+	if(val > max) return max;
+	return val;
 }
