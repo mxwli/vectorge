@@ -1,8 +1,10 @@
 
 cc=gcc
+cflags=-fdiagnostics-color=always
 
 ../bin/run.bin: main.o node.o advvec.o game.o
-	cc main.o node.o -lraylib -ldl -lm -o ../bin/run.bin
+	clear
+	cc main.o node.o game.o advvec.o -lraylib -ldl -lm -o ../bin/run.bin ${cflags}
 
 clean:
 	rm *.o
@@ -12,13 +14,13 @@ run: ../bin/run.bin
 	../bin/run.bin
 
 main.o: main.c main.h
-	cc -c main.c -o main.o
+	cc -c main.c -o main.o ${cflags}
 
 node.o: node.c node.h
-	cc -c node.c -o node.o
+	cc -c node.c -o node.o ${cflags}
 
 advvec.o: advvec.c advvec.h
-	cc -c advvec.c -o advvec.o
+	cc -c advvec.c -o advvec.o ${cflags}
 
 game.o: game.c game.h
-	cc -c game.c -o game.o
+	cc -c game.c -o game.o ${cflags}

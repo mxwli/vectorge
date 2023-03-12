@@ -11,7 +11,7 @@ anything that has a physical presence in the game world has a pointer to some no
 typedef struct Node2D Node;
 
 struct Node2D {
-	int x, y; //offset from parent
+	double x, y; //offset from parent
 	double rotation, scale; //rotation & scale of the node. only affects children
 	struct Node2D* parent; //pointer to parent
 	struct Node2D** children; //pointer to array of children... is this really necessary?

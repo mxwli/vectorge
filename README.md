@@ -6,4 +6,4 @@ Instead of olc::PixelGameEngine, I'll be using raylib, and instead of C++, I'll 
 
 TODO:
 - optimize node.c
-
+- optimize game.c
