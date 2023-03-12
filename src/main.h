@@ -5,3 +5,7 @@
 #define MAINMENU 0
 #define INGAME 1
 #define SETTINGS 2
+
+void initializeVars();
+
+void drawFrame();
