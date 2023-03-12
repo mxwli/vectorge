@@ -9,6 +9,7 @@ Node* newNode(int x, int y, double r, Node* p) {
 	ret->x = x; ret->y = y; ret->rotation = r; ret->scale = 1;
 	ret->parent = p; ret->children = NULL;
 	ret->size = ret->cap = 0;
+	ret->deletionflag = 0;
 	return ret;
 }
 
@@ -46,6 +47,29 @@ void removeChild(Node* node, Node* child) {
 	remNode(node->children[idx]);
 	for(int i = idx+1; i < node->size; i++) node->children[i-1] = node->children[i];
 	node->size -= 1;
+}
+
+void purgeTree(Node* node) {
+	if(node->deletionflag) {
+		remNode(node);
+	}
+	else {
+		Node** newSet = malloc(node->cap*sizeof(Node*));
+		memset(newSet, 0, node->cap*sizeof(Node*));
+		int size = 0;
+		for(int i = 0; i < node->size; i++) {
+			if(node->children[i]->deletionflag) {
+				purgeTree(node->children[i]);
+			}
+			else {
+				newSet[size] = node->children[i];
+				size++;
+			}
+		}
+		free(node->children);
+		node->children = newSet;
+		node->size = size;
+	}
 }
 
 Vector2 localPos(Node* node, int p) {

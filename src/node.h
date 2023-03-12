@@ -16,6 +16,7 @@ struct Node2D {
 	struct Node2D* parent; //pointer to parent
 	struct Node2D** children; //pointer to array of children... is this really necessary?
 	int size, cap; //size/cap of children array
+	int deletionflag; //flag for deletion, deletes all children as well
 };
 
 Node* newNode(int x, int y, double r, Node* p);
@@ -27,6 +28,9 @@ void appendChild(Node* par, Node* child);
 //appends child to parent's child list and updates child's parent pointer
 void removeChild(Node* node, Node* child);
 //removes child
+void purgeTree(Node* node);
+//deletes all nodes with the deletion flag
+//avoids quadratic deletion time
 
 Vector2 localPos(Node* node, int p);
 //local position of a node relative to its p th ancestor

@@ -57,4 +57,9 @@ void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize);
 //adjusts entity velocities so they don't go through walls
 //there may be a better name for this
 
+int purgeEntities(Entity* ent, int entsize);
+//removes noninvincible entities and marks their nodes for deletion
+//returns the resulting array length
+//be sure to purge the node tree afterwards
+
 #endif

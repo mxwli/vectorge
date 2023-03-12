@@ -47,3 +47,17 @@ void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize) {
 		normalizeEnt(ent + i, walls, wallsize);
 	}
 }
+
+int purgeEntities(Entity* ent, int entsize) {
+	Entity* newEnt = malloc(sizeof(Entity) * entsize);
+	memset(newEnt, 0, sizeof newEnt);
+	int size = 0;
+	for(int i = 0; i < entsize; i++) {
+		if(!ent[i].invincible && ent[i].HP <= 0)
+			ent[i].loc->deletionflag = 1;
+		else newEnt[size++] = ent[i];
+	}
+	for(int i = 0; i < size; i++) ent[i] = newEnt[i];
+	free(newEnt);
+	return size;
+}

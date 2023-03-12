@@ -14,10 +14,11 @@
 
 int main() {
 
-	initializeVars();
+	
 	InitWindow(WindowWidth, WindowHeight, "VectorGE");
 	SetTargetFPS(TargetFPS);
 	SetExitKey(KEY_NULL);
+	initializeVars();
 	
 #ifdef PLATFORM_WEB
 	emscripten_set_main_loop(drawFrame, 0, 1);
@@ -33,16 +34,24 @@ int main() {
 
 int WindowState = MAINMENU;
 
-Node* headNode, * wall, * player;
-Entity* playerWrapper;
+Node* headNode, * wallsNode, * entities, * teams[2], * camera;
+Entity* playerWrapper, * friendlyWrapper, * enemyWrapper;
+int numFriendlies, 
 Wall* wallWrapper;
+
+//skeletal node structure, as defined in the diagram
 
 void initializeVars() {
 	headNode = newNode(0, 0, 0, 0);
-	wall = addChild(headNode);
-	player = addChild(headNode);
-	playerWrapper = blankEntity(player, 25);
-	wallWrapper = blankWall(wall);
+	wallsNode = addChild(headNode);
+	entities = addChild(headNode);
+	teams[0] = addChild(entities);
+	teams[1] = addChild(entities);
+	playerWrapper = blankEntity(addChild(teams[0]), 25);
+	camera = addChild(addChild(playerWrapper->loc));
+	camera->x = -WindowWidth/2;
+	camera->y = -WindowHeight/2;
+	
 }
 
 void drawFrame() {
@@ -63,15 +72,6 @@ void drawFrame() {
 	else if (WindowState == INGAME) {
 		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
 		
-		for(int i = 1; i < wall->size; i++) {
-			DrawLineV(localPos(wall->children[i-1], -1), localPos(wall->children[i], -1), WHITE);
-		}
-		DrawCircleV(localPos(playerWrapper->loc, -1), playerWrapper->radius, GREEN);
-		playerWrapper->vel.x = (IsKeyDown(KEY_D)?250:0)-(IsKeyDown(KEY_A)?250:0);
-		playerWrapper->vel.y = (IsKeyDown(KEY_S)?250:0)-(IsKeyDown(KEY_W)?250:0);
-		
-		normalizeVectors(playerWrapper, 1, wallWrapper, 1);
-		entityTick(playerWrapper, GetFrameTime());
 	}
 	else if (WindowState == SETTINGS) {
 
@@ -81,17 +81,7 @@ void drawFrame() {
 	}
 	else if (WindowState == EDITOR) {
 		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
-		if(IsMouseButtonPressed(0)) {
-			Node* tmp = addChild(wall);
-			setOffset(tmp, GetMousePosition());
-		}
-		if(IsMouseButtonPressed(1)) {
-			setOffset(player, GetMousePosition());
-		}
-		for(int i = 1; i < wall->size; i++) {
-			DrawLineV(localPos(wall->children[i-1], -1), localPos(wall->children[i], -1), WHITE);
-		}
-		DrawCircleV(localPos(playerWrapper->loc, -1), playerWrapper->radius, GREEN);
+		
 	}
 
 	EndDrawing();

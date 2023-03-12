@@ -1,6 +1,6 @@
 
 cc=gcc
-cflags=-fdiagnostics-color=always
+# cflags=-fdiagnostics-color=always
 
 ../bin/run.bin: main.o node.o advvec.o game.o
 	clear
