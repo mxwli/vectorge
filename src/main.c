@@ -37,7 +37,7 @@ void initializeVars() {
 	headNode = newNode(0, 0, 0, 0);
 	srand(time(0));
 	
-	camera = addChild(headNode);
+	camera = addChild(addChild(headNode));
 	camera->x = -WindowWidth/2;
 	camera->y = -WindowHeight/2;
 
@@ -53,14 +53,18 @@ void drawFrame() {
 	BeginDrawing();
 	ClearBackground(DARKGRAY);
 	DrawFPS(10, 10);
-	
+
 	Node* ptr = tail;
-	while(ptr != headNode && ptr != NULL) {
+	while(ptr != headNode) {
 		DrawLineV(relativePos(ptr, camera), relativePos(ptr->parent, camera), WHITE);
-		ptr->rotation += 0.1*GetFrameTime();
-		ptr->x = 75*sin(GetTime());
+		DrawCircleV(relativePos(ptr, camera), 3, RED);
+		ptr->rotation += GetFrameTime();
 		ptr = ptr->parent;
 	}
+
+	//input
+	camera->parent->scale /= 1+GetMouseWheelMove()/10;
+	if(camera->parent->scale < 0.2) camera->parent->scale = 0.2;
 	
 	EndDrawing();
 }

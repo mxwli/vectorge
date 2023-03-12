@@ -6,7 +6,8 @@
 
 Node* newNode(int x, int y, double r, Node* p) {
 	Node* ret = malloc(sizeof(Node));
-	ret->x = x; ret->y = y; ret->rotation = r; ret->parent = p; ret->children = NULL;
+	ret->x = x; ret->y = y; ret->rotation = r; ret->scale = 1;
+	ret->parent = p; ret->children = NULL;
 	ret->size = ret->cap = 0;
 	return ret;
 }
@@ -41,16 +42,40 @@ void removeChild(Node* node, Node* child) {
 Vector2 localPos(Node* node, int p) {
 	Vector2 ret = {0, 0};
 	while(p && node != NULL) {
+		
 		Vector2 nw = {node->x, node->y};
-		ret = Vector2Add(Vector2Rotate(ret, node->rotation), nw);
+		double rot = node->rotation, scale = node->scale;
+		
+		if(scale != 1)
+			ret = Vector2Scale(ret, scale);
+		if(rot != 0)
+			ret = Vector2Rotate(ret, rot);
+
+		ret = Vector2Add(ret, nw);
 		node = node->parent;
 		p--;
 	}
 	return ret;
 }
 
+double localScale(Node* node, int p) {
+	double ret = 1;
+	while(p && node != NULL && node->parent != NULL) {
+		ret *= node->parent->scale;
+		node = node->parent;
+	}
+	return ret;
+}
+
 Vector2 relativePos(Node* A, Node* B) {
-	return Vector2Subtract(localPos(A, -1), localPos(B, -1));
+	Vector2 posA = localPos(A, -1), posB = localPos(B, -1);
+	Vector2 delta = Vector2Subtract(posA, posB);
+	delta = Vector2Scale(delta, relativeScale(A, B));
+	return delta;
+}
+
+double relativeScale(Node* A, Node* B) {
+	return localScale(A, -1) / localScale(B, -1);
 }
 
 void setOffset(Node* node, Vector2 newpos) {
