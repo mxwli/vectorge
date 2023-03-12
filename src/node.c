@@ -12,7 +12,7 @@ Node* newNode(int x, int y, double r, Node* p) {
 	return ret;
 }
 
-static void remNode(Node* nde) {
+void remNode(Node* nde) {
 	for(int i = 0; i < nde->size; i++)
 		remNode(nde->children[i]);
 	free(nde->children);
@@ -20,8 +20,11 @@ static void remNode(Node* nde) {
 }
 
 Node* addChild(Node* node) {
-	if(node->size == node->cap)
+	if(node->size == node->cap) {
 		node->children = realloc(node->children, 2*node->cap*sizeof(Node*)+1);
+		for(int i = node->cap; i < node->cap*2+1; i++) node->children[i] = NULL;
+		node->cap = node->cap*2+1;
+	}
 	
 	int ret = node->size; (node->size)++;
 	node->children[ret] = newNode(0, 0, 0, node);
@@ -70,7 +73,7 @@ double localScale(Node* node, int p) {
 Vector2 relativePos(Node* A, Node* B) {
 	Vector2 posA = localPos(A, -1), posB = localPos(B, -1);
 	Vector2 delta = Vector2Subtract(posA, posB);
-	delta = Vector2Scale(delta, relativeScale(A, B));
+	delta = Vector2Scale(delta, 1/localScale(B, -1));
 	return delta;
 }
 

@@ -30,6 +30,7 @@ int main() {
 #endif
 	
 	CloseWindow();
+	remNode(headNode);
 	return 0;
 }
 
@@ -59,6 +60,7 @@ void drawFrame() {
 		DrawLineV(relativePos(ptr, camera), relativePos(ptr->parent, camera), WHITE);
 		DrawCircleV(relativePos(ptr, camera), 3, RED);
 		ptr->rotation += GetFrameTime();
+		ptr->scale += 0.01*GetFrameTime();
 		ptr = ptr->parent;
 	}
 

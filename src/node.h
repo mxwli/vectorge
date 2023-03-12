@@ -11,6 +11,7 @@ struct Node2D {
 };
 
 Node* newNode(int x, int y, double r, Node* p);
+void remNode(Node* nde);
 
 Node* addChild(Node* node);
 //adds child node to given node and returns its location
