@@ -35,6 +35,7 @@ void appendChild(Node* node, Node* child) {
 	
 	int ret = node->size; (node->size)++;
 	node->children[ret] = child;
+	child->parent = node;
 
 	return;
 }
