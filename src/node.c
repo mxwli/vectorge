@@ -101,10 +101,19 @@ double localScale(Node* node, int p) {
 	return ret;
 }
 
+double localRotation(Node* node, int p) {
+	double ret = 0;
+	while(p && node != NULL && node->parent != NULL) {
+		ret += node->parent->rotation;
+		node = node->parent;
+	}
+	return ret;
+}
+
 Vector2 relativePos(Node* A, Node* B) {
 	Vector2 posA = localPos(A, -1), posB = localPos(B, -1);
 	Vector2 delta = Vector2Subtract(posA, posB);
-	delta = Vector2Scale(delta, 1/localScale(B, -1));
+	delta = Vector2Rotate(Vector2Scale(delta, 1/localScale(B, -1)), -localRotation(B, -1));
 	return delta;
 }
 

@@ -62,4 +62,6 @@ int purgeEntities(Entity* ent, int entsize);
 //returns the resulting array length
 //be sure to purge the node tree afterwards
 
+//TODO ADD INTERACTIONS
+
 #endif

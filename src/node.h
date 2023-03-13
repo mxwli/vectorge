@@ -40,6 +40,10 @@ double localScale(Node* node, int p);
 //local scale of a node relative to its p th ancestor
 //set p=-1 for scale relative to global context
 
+double localRotation(Node* node, int p);
+//rotation of a node relative to its pth ancestor
+//set p=-1 for scale relative to global context
+
 Vector2 relativePos(Node* A, Node* B);
 //position of A relative to B, factoring scales into consideration
 
