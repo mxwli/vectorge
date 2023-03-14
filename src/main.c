@@ -48,7 +48,7 @@ void initializeVars() {
 	playerWrapper = blankEntity(addChild(addChild(teams[0])), 25);
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
-	camera->y = -WindowHeight/2;
+	camera->y = -3*WindowHeight/4;
 	dummy = addChild(camera);
 	friendlyWrapper = playerWrapper; numFriendlies = friendlyCap = 1;
 	enemyWrapper = NULL; numEnemies = enemyCap = 0;
@@ -84,6 +84,15 @@ void drawGame() {
 	}
 }
 
+void debugTree(Node* n) {
+	if(n->parent != NULL) {
+		DrawLineV(screnPos(n), screnPos(n->parent), GRAY);
+	}
+	for(int i = 0; i < n->size; i++) {
+		debugTree(n->children[i]);
+	}
+}
+
 void drawFrame() {
 	BeginDrawing();
 	ClearBackground(DARKGRAY);
@@ -99,8 +108,12 @@ void drawFrame() {
 		if(IsMouseButtonPressed(0)) {
 			HideCursor();
 			WindowState = INGAME;
+			camera->y = -3*WindowHeight/4;
 		}
-		if(IsKeyPressed(KEY_E)) WindowState = EDITOR;
+		if(IsKeyPressed(KEY_E)) {
+			WindowState = EDITOR;
+			camera->y = -WindowHeight/2;
+		}
 	}
 	else if (WindowState == INGAME) {
 		if(IsKeyPressed(KEY_ESCAPE)) {
@@ -130,7 +143,7 @@ void drawFrame() {
 		purgeTree(headNode);
 
 		drawGame();
-
+		debugTree(headNode);
 	}
 	else if (WindowState == SETTINGS) {
 		
@@ -140,13 +153,13 @@ void drawFrame() {
 	}
 	else if (WindowState == EDITOR) {
 		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
-		playerWrapper->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
-		playerWrapper->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
+		playerWrapper->vel.x = (IsKeyDown(KEY_D)?900:0)-(IsKeyDown(KEY_A)?900:0);
+		playerWrapper->vel.y = (IsKeyDown(KEY_S)?900:0)-(IsKeyDown(KEY_W)?900:0);
 		camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
 		if(camera->parent->scale < 0.2) camera->parent->scale = 0.2;
 		pushNode(playerWrapper->loc, Vector2Scale(playerWrapper->vel, GetFrameTime()));
 
-		DrawText("Space to create new wall instance\nClick to add wall vertex\nShift to close shape", 5, 5, 15, WHITE);
+		DrawText("Space to create new wall instance\nClick to add wall vertex\nShift to close shape\nRight click to remove walls", 5, 5, 15, WHITE);
 
 		if(IsKeyPressed(KEY_SPACE)) {
 			if(numWalls == wallCap) {

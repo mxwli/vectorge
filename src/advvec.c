@@ -4,10 +4,12 @@
 #include <stdlib.h>
 #include "advvec.h"
 
+//testing: good
 float _cp(Vector2 v1, Vector2 v2) {
 	return v1.x*v2.y-v1.y*v2.x;
 }
 
+//testing: good
 int intersect(Vector2 x1, Vector2 x2, Vector2 y1, Vector2 y2) {
 	float a = _cp(_ms(x2, x1), _ms(y1, x1)),
 		b = _cp(_ms(x2, x1), _ms(y2, x1)),
@@ -31,6 +33,7 @@ int intersect(Vector2 x1, Vector2 x2, Vector2 y1, Vector2 y2) {
 	}
 }
 
+//testing: good
 Vector2 displacement(Vector2 x, Vector2 y1, Vector2 y2) {
 	int A = _dp(_ms(y2, y1), _ms(x, y1)) > 0 && _dp(_ms(y1, y2), _ms(x, y2)) > 0;
 	if(A) {
@@ -43,15 +46,18 @@ Vector2 displacement(Vector2 x, Vector2 y1, Vector2 y2) {
 	}
 }
 
+//testing: good
 Vector2 projection(Vector2 A, Vector2 B) {
 	float projlength = _dp(A, B) / Vector2Length(B);
 	return Vector2Scale(B, projlength/Vector2Length(B));
 }
 
+//testing: good
 Vector2 projectionNorm(Vector2 A, Vector2 B) {
 	return _ms(A, projection(A, B));
 }
 
+//testing: good
 float fclamp(float min, float max, float val) {
 	if(val < min) return min;
 	if(val > max) return max;

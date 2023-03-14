@@ -1,6 +1,6 @@
 #include "game.h"
 
-
+//testing: good
 Wall* blankWall(Node* loc) {
 	Wall* ret = malloc(sizeof(Wall));
 	memset(ret, 0, sizeof(Wall));
@@ -8,7 +8,7 @@ Wall* blankWall(Node* loc) {
 	return ret;
 }
 
-
+//testing: good
 Entity* blankEntity(Node* loc, float rad) {
 	Entity* ret = malloc(sizeof(Entity));
 	memset(ret, 0, sizeof(Entity));
@@ -16,6 +16,7 @@ Entity* blankEntity(Node* loc, float rad) {
 	return ret;
 }
 
+//testing: none
 void entityTick(Entity* ent, float f) {
 	pushNode(ent->loc, Vector2Scale(ent->vel, f));
 	ent->damage += ent->decayHP * f;
@@ -23,6 +24,7 @@ void entityTick(Entity* ent, float f) {
 	ent->damage = 0;
 }
 
+//testing: OK
 void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
 	int left = 0, right = 0;
 	//ent->vel = Vector2Rotate(ent->vel, localRotation(ent->loc, -1));
@@ -44,12 +46,14 @@ void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
 	//ent->vel = Vector2Rotate(ent->vel, -localRotation(ent->loc, -1));
 }
 
+//testing: OK
 void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize) {
 	for(int i = 0; i < entsize; i++) {
 		normalizeEnt(ent + i, walls, wallsize);
 	}
 }
 
+//testing: none
 int purgeEntities(Entity* ent, int entsize) {
 	Entity* newEnt = malloc(sizeof(Entity) * entsize);
 	memset(newEnt, 0, sizeof newEnt);
