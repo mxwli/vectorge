@@ -35,6 +35,9 @@ void purgeTree(Node* node);
 Vector2 localPos(Node* node, int p);
 //local position of a node relative to its p th ancestor
 //set p=-1 for position relative to global context
+Vector2 walkDown(Node* node, int p, Vector2 pos);
+//performs the inverse of localPos(node, p)
+//takes a vector that would be given by localPos and returns its "unlocalPos"
 
 double localScale(Node* node, int p);
 //local scale of a node relative to its p th ancestor

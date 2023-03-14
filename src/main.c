@@ -30,7 +30,7 @@ int main() {
 
 int WindowState;
 
-Node* headNode, * wallsNode, * entities, * teams[2], * camera;
+Node* headNode, * wallsNode, * entities, * teams[2], * camera, * dummy;
 Entity* playerWrapper, * friendlyWrapper, * enemyWrapper;
 int numFriendlies, numEnemies, friendlyCap, enemyCap;
 Wall* wallWrapper;
@@ -49,6 +49,7 @@ void initializeVars() {
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
 	camera->y = -WindowHeight/2;
+	dummy = addChild(camera);
 	friendlyWrapper = playerWrapper; numFriendlies = friendlyCap = 1;
 	enemyWrapper = NULL; numEnemies = enemyCap = 0;
 	wallWrapper = NULL; numWalls = wallCap = 0;
@@ -95,20 +96,27 @@ void drawFrame() {
 		DrawText("Click anywhere.", WindowWidth/2-width/2, WindowHeight/2, 50, WHITE);
 		DrawText("E for Editor", WindowWidth/2-width/2, WindowHeight/2+75, 25, WHITE);
 
-		if(IsMouseButtonPressed(0)) WindowState = INGAME;
+		if(IsMouseButtonPressed(0)) {
+			HideCursor();
+			WindowState = INGAME;
+		}
 		if(IsKeyPressed(KEY_E)) WindowState = EDITOR;
 	}
 	else if (WindowState == INGAME) {
-		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
+		if(IsKeyPressed(KEY_ESCAPE)) {
+			WindowState = MAINMENU;
+			ShowCursor();
+		}
 
 		playerWrapper->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
 		playerWrapper->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
+		playerWrapper->vel = Vector2Rotate(playerWrapper->vel, camera->parent->rotation);
 
 		camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
 		if(camera->parent->scale > 5) camera->parent->scale = 5;
-		float hmove = GetMouseDelta().x/3000;
+
+		float hmove = GetMouseDelta().x/750;
 		camera->parent->rotation += hmove;
-		playerWrapper->loc->parent->rotation += hmove;
 		SetMousePosition(WindowWidth/2, WindowHeight/2);
 		
 		normalizeVectors(friendlyWrapper, numFriendlies, wallWrapper, numWalls);
@@ -131,15 +139,14 @@ void drawFrame() {
 		
 	}
 	else if (WindowState == EDITOR) {
-		camera->parent->rotation = 0; //dont wanna parse rotation
 		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
 		playerWrapper->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
 		playerWrapper->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
 		camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
 		if(camera->parent->scale < 0.2) camera->parent->scale = 0.2;
-		pushNode(camera, Vector2Scale(playerWrapper->vel, GetFrameTime()));
+		pushNode(playerWrapper->loc, Vector2Scale(playerWrapper->vel, GetFrameTime()));
 
-		DrawText("Space to create new wall instance\nClick to add wall vertex", 5, 5, 15, WHITE);
+		DrawText("Space to create new wall instance\nClick to add wall vertex\nShift to close shape", 5, 5, 15, WHITE);
 
 		if(IsKeyPressed(KEY_SPACE)) {
 			if(numWalls == wallCap) {
@@ -152,10 +159,15 @@ void drawFrame() {
 		}
 		if(IsMouseButtonPressed(0) && numWalls > 0) {
 			Node* location = addChild(wallWrapper[numWalls-1].loc);
-			Vector2 gamePos = Vector2Scale(GetMousePosition(), camera->parent->scale);
-			gamePos = Vector2Add(gamePos, localPos(camera, -1));
-			setOffset(location, gamePos);
-
+//			Vector2 gamePos = Vector2Scale(GetMousePosition(), camera->parent->scale);
+//			gamePos = Vector2Add(gamePos, localPos(camera, -1));
+//			setOffset(location, gamePos);
+			setOffset(dummy, GetMousePosition());
+			setOffset(location, localPos(dummy, -1));
+		}
+		if(IsKeyPressed(KEY_LEFT_SHIFT)) {
+			Node* location = addChild(wallWrapper[numWalls-1].loc);
+			setOffset(location, localPos(wallWrapper[numWalls-1].loc->children[0], 1));
 		}
 
 		drawGame();

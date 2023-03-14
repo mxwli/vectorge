@@ -25,6 +25,7 @@ void entityTick(Entity* ent, float f) {
 
 void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
 	int left = 0, right = 0;
+	//ent->vel = Vector2Rotate(ent->vel, localRotation(ent->loc, -1));
 	for(int i = 0; i < wallsize; i++) {
 		Node* loc = walls[i].loc;
 		for(int i2 = 1; i2 < loc->size; i2++) {
@@ -40,6 +41,7 @@ void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
 		}
 	}
 	if(left && right) ent->vel = Vector2Zero();
+	//ent->vel = Vector2Rotate(ent->vel, -localRotation(ent->loc, -1));
 }
 
 void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize) {

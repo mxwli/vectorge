@@ -92,6 +92,15 @@ Vector2 localPos(Node* node, int p) {
 	return ret;
 }
 
+Vector2 walkDown(Node* node, int p, Vector2 global) {
+	if(p == 0 || node == NULL) return global; //no transformations are made
+	global = walkDown(node->parent, p-1, global);
+	global.x -= node->x; global.y -= node->y;
+	if(node->rotation != 0) global = Vector2Rotate(global, -node->rotation);
+	if(node->scale != 1) global = Vector2Scale(global, 1/node->scale);
+	return global;
+}
+
 double localScale(Node* node, int p) {
 	double ret = 1;
 	while(p && node != NULL && node->parent != NULL) {
@@ -111,10 +120,7 @@ double localRotation(Node* node, int p) {
 }
 
 Vector2 relativePos(Node* A, Node* B) {
-	Vector2 posA = localPos(A, -1), posB = localPos(B, -1);
-	Vector2 delta = Vector2Subtract(posA, posB);
-	delta = Vector2Rotate(Vector2Scale(delta, 1/localScale(B, -1)), -localRotation(B, -1));
-	return delta;
+	return walkDown(B, -1, localPos(A, -1));
 }
 
 double relativeScale(Node* A, Node* B) {
