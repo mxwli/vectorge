@@ -10,9 +10,10 @@ If you take a look at the code, you'll find most function definitions have the f
 - **OK** means the function was used, and appears to be OK
 - **good** means the function is almost certainly not going to be a source of a bug
 
-NOTE:
-currently the implementation of node.c is extremely suspicious. I will need to fix it **immediately**
 
-TODO:
-- optimize node.c
-- optimize game.c
+the individual implementation of:
+- game.c
+- node.c
+- advvec.c
+
+need to be optimized in the future
