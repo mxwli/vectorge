@@ -98,3 +98,103 @@ void purgeEntities(EntityVector* ent) {
 	ent->size = size;
 	free(newEnt);
 }
+
+//testing: none
+bool interCircleCircle(Vector2 a, float radA, Vector2 b, float radB) {
+	return Vector2Distance(a, b) <= radA+radB;
+}
+//testing: none
+bool interCircleLine(Vector2 a, float rad, Vector2 x1, Vector2 x2) {
+	return Vector2Length(displacement(a, x1, x2)) <= rad;
+}
+//testing: ... you know
+bool interLineLine(Vector2 x1, Vector2 x2, Vector2 y1, Vector2 y2) {
+	return intersect(x1, x2, y1, y2);
+}
+//testing: ...
+bool interEntCircle(Entity a, Vector2 b, float radB) {
+	return interCircleCircle(localPos(a.loc, -1), localScale(a.loc, -1) * a.radius, b, radB);
+}
+//testing: 
+bool interEntLine(Entity a, Vector2 x1, Vector2 x2) {
+	return interCircleLine(localPos(a.loc, -1), localScale(a.loc, -1) * a.radius, x1, x2);
+}
+//t
+bool interEntEnt(Entity a, Entity b) {
+	return interCircleCircle(localPos(a.loc, -1), localScale(a.loc, -1) * a.radius,
+								localPos(b.loc, -1), localScale(b.loc, -1) * b.radius);
+}
+bool interEntWall(Entity a, Wall b) {
+	bool ret = 0;
+	for(int i = 1; !ret && i < b.loc->size; i++) {
+		ret = interEntLine(a, localPos(b.loc->children[i], -1), localPos(b.loc->children[i-1], -1));
+	}
+	return ret;
+}
+
+//testing: none
+bool interWallLine(Wall a, Vector2 x1, Vector2 x2) {
+	bool ret = 0;
+	for(int i = 1; !ret && i < a.loc->size; i++) {
+		ret = interLineLine(x1, x2, localPos(a.loc->children[i],-1),localPos(a.loc->children[i-1],-1));
+	}
+	return ret;
+}
+
+//testing: none
+int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
+	int cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interEntLine(arr.array[i], x1, x2)) cnt++;
+	
+	int* ret = malloc((cnt+1)*sizeof(int));
+	ret[cnt] = -1;
+	cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interEntLine(arr.array[i], x1, x2)) ret[cnt++] = i;
+	return ret;
+}
+
+//testing: none
+int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall)) {
+	int cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interWallLine(arr.array[i], x1, x2)) cnt++;
+	int* ret = malloc((cnt+1)*sizeof(int));
+	ret[cnt] = -1;
+	cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interWallLine(arr.array[i], x1, x2)) ret[cnt++] = i;
+	return ret;
+}
+
+Vector2 delimitEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
+	x2 = Vector2Subtract(x2, x1);
+	float l = 0, h = 1;
+	for(int it = 0; it < 15; it++) { //how many times this iterator iterates can be modified
+		bool flag = 0;
+		for(int i = 0; !flag && i < arr.size; i++)
+			if(scan(arr.array[i]) &&
+				interEntLine(arr.array[i], x1, Vector2Add(x1, Vector2Scale(x2, (h+l)/2))))
+				flag = 1;
+
+		if(flag) {h = (h+l)/2;}
+		else {l = (h+l)/2;}
+	}
+	return Vector2Add(x1, Vector2Scale(x2, h));
+}
+
+Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
+	x2 = Vector2Subtract(x2, x1);
+	for(int it = 0; it < 15; it++) { //how many times this iterator iterates can be modified
+		bool flag = 0;
+		for(int i = 0; !flag && i < arr.size; i++)
+			if(scan(arr.array[i]) &&
+				interWallLine(arr.array[i], x1, Vector2Add(x1, Vector2Scale(x2, (h+l)/2))))
+				flag = 1;
+
+		if(flag) {h = (h+l)/2;}
+		else {l = (h+l)/2;}
+	}
+	return Vector2Add(x1, Vector2Scale(x2, h));
+}

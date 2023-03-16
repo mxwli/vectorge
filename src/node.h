@@ -26,6 +26,8 @@ Node* addChild(Node* node);
 //adds child node to given node and returns its location
 void appendChild(Node* par, Node* child);
 //appends child to parent's child list and updates child's parent pointer
+void adoptChild(Node* par, Node* child);
+//appends child to parent's child list, but doesn't update child's parent pointer
 void removeChild(Node* node, Node* child);
 //removes child
 void purgeTree(Node* node);

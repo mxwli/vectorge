@@ -43,6 +43,18 @@ void appendChild(Node* node, Node* child) {
 	return;
 }
 
+
+void adoptChild(Node* node, Node* child) {
+	if(node->size == node->cap) {
+		node->children = realloc(node->children, (1+2*node->cap)*sizeof(Node*));
+		for(int i = node->cap; i < node->cap*2+1; i++) node->children[i] = NULL;
+		node->cap = node->cap*2+1;
+	}
+	
+	int ret = node->size; (node->size)++;
+	node->children[ret] = child;
+}
+
 //testing: none
 void removeChild(Node* node, Node* child) {
 	int idx = -1;

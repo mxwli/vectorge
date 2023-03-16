@@ -5,6 +5,7 @@
 #include <raymath.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "node.h"
 #include "advvec.h"
 
@@ -90,7 +91,45 @@ void purgeEntities(EntityVector* ent);
 
 //TODO ADD INTERACTIONS
 
+//intersection function naming convention: inter[a][b]
+//where a, b are one of {Ent, Wall, Circle, Line}
 
+bool interCircleCircle(Vector2 a, float radA, Vector2 b, float radB);	//uses advvec functions
+bool interCircleLine(Vector2 a, float rad, Vector2 x1, Vector2 x2);		//uses advvec functions
+bool interLineLine(Vector2 x1, Vector2 x2, Vector2 y1, Vector2 y2);		//uses advvec functions
+bool interEntCircle(Entity a, Vector2 b, float radB);					//uses intercirclecircle
+bool interEntLine(Entity a, Vector2 x1, Vector2 x2);					//uses intercircleline
+bool interEntEnt(Entity a, Entity b);									//uses intercirclecircle
+bool interEntWall(Entity a, Wall b);									//uses intercircleline
+bool interWallLine(Wall a, Vector2 x1, Vector2 x2);						//uses interlineline
+
+//the following functions test for intersections in a list of items
+//they return a list of integers pointing to the intersected indecies, terminating with -1
+//there is also a parameter that takes in an entity/wall and returns if it's valid to be intersecting with.
+
+bool defaultEntScan(Entity e) {return 1;}
+bool defaultWallScan(Wall w) {return 1;}
+
+int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity));
+//scans an array of entities using a line
+int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall));
+//scans an array of walls using a line
+
+//currently the implementation of the following functions are TERRIBLE
+//that's because they binary search how long the line can travel before they encounter an intersection point.
+//running time is nlogn
+Vector2 delimitEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity));
+//finds closest intersection point and returns it.
+Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall));
+//finds closest intersection point and returns it.
+
+//REMEMBER TO DEALLOCATE THE RETURNED MEMORY
+
+
+void functionEnt(Entity* ent, float f);
+//performs entity logic
+
+void functionEnts(EntityVector* ent, float f);
 
 /*
 things an entity can do:
