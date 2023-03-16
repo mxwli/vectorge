@@ -8,6 +8,20 @@ Wall* blankWall(Node* loc) {
 	return ret;
 }
 
+WallVector* blankWallVector() {
+	WallVector* ret = malloc(sizeof(WallVector));
+	memset(ret, 0, sizeof(WallVector));
+	return ret;
+}
+
+void pushWall(WallVector* walls, Wall val) {
+	if(walls->size == walls->cap) {
+		walls->array = realloc(walls->array, (2*walls->cap+1)*sizeof(Wall));
+		walls->cap = 2*walls->cap + 1;
+	}
+	walls->array[walls->size++] = val;
+}
+
 //testing: good
 Entity* blankEntity(Node* loc, float rad) {
 	Entity* ret = malloc(sizeof(Entity));
@@ -16,20 +30,37 @@ Entity* blankEntity(Node* loc, float rad) {
 	return ret;
 }
 
-//testing: none
-void entityTick(Entity* ent, float f) {
+EntityVector* blankEntityVector() {
+	EntityVector* ret = malloc(sizeof(EntityVector));
+	memset(ret, 0, sizeof(EntityVector));
+	return ret;
+}
+
+void pushEntity(EntityVector* ents, Entity val) {
+	if(ents->size == ents->cap) {
+		ents->array = realloc(ents->array, (2*ents->cap+1)*sizeof(Entity));
+		ents->cap = 2*ents->cap+1;
+	}
+	ents->array[ents->size++] = val;
+}
+
+void tickEnt(Entity* ent, float f) {
 	pushNode(ent->loc, Vector2Scale(ent->vel, f));
-	ent->damage += ent->decayHP * f;
-	ent->HP = fclamp(0, ent->maxHP, ent->HP-ent->damage);
+	ent->damage += ent->decayHP*f;
+	ent->HP = fclamp(0, ent->maxHP, ent->HP - ent->damage);
 	ent->damage = 0;
 }
 
-//testing: OK
-void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
+void tickEnts(EntityVector* ent, float f) {
+	for(int i = 0; i < ent->size; i++) {
+		tickEnt(ent->array+i, f);
+	}
+}
+
+void normalizeEnt(Entity* ent, WallVector* walls) {
 	int left = 0, right = 0;
-	//ent->vel = Vector2Rotate(ent->vel, localRotation(ent->loc, -1));
-	for(int i = 0; i < wallsize; i++) {
-		Node* loc = walls[i].loc;
+	for(int i = 0; i < walls->size; i++) {
+		Node* loc = walls->array[i].loc;
 		for(int i2 = 1; i2 < loc->size; i2++) {
 			Vector2 A = localPos(loc->children[i2], -1);
 			Vector2 B = localPos(loc->children[i2-1], -1);
@@ -43,27 +74,27 @@ void normalizeEnt(Entity* ent, Wall* walls, int wallsize) {
 		}
 	}
 	if(left && right) ent->vel = Vector2Zero();
-	//ent->vel = Vector2Rotate(ent->vel, -localRotation(ent->loc, -1));
+
 }
 
-//testing: OK
-void normalizeVectors(Entity* ent, int entsize, Wall* walls, int wallsize) {
-	for(int i = 0; i < entsize; i++) {
-		normalizeEnt(ent + i, walls, wallsize);
+void normalizeEnts(EntityVector* ent, WallVector* walls) {
+	for(int i = 0; i < ent->size; i++) {
+		normalizeEnt(ent->array+i, walls);
 	}
 }
+
 
 //testing: none
-int purgeEntities(Entity* ent, int entsize) {
-	Entity* newEnt = malloc(sizeof(Entity) * entsize);
+void purgeEntities(EntityVector* ent) {
+	Entity* newEnt = malloc(sizeof(Entity)*ent->cap);
 	memset(newEnt, 0, sizeof newEnt);
 	int size = 0;
-	for(int i = 0; i < entsize; i++) {
-		if(!ent[i].invincible && ent[i].HP <= 0)
-			ent[i].loc->deletionflag = 1;
-		else newEnt[size++] = ent[i];
+	for(int i = 0; i < ent->size; i++) {
+		if(!ent->array[i].invincible && ent->array[i].HP <= 0)
+			ent->array[i].loc->deletionflag = 1;
+		else newEnt[size++] = ent->array[i];
 	}
-	for(int i = 0; i < size; i++) ent[i] = newEnt[i];
+	for(int i = 0; i < size; i++) ent->array[i] = newEnt[i];
+	ent->size = size;
 	free(newEnt);
-	return size;
 }

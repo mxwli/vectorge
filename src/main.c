@@ -31,10 +31,9 @@ int main() {
 int WindowState;
 
 Node* headNode, * wallsNode, * entities, * teams[2], * camera, * dummy;
-Entity* playerWrapper, * friendlyWrapper, * enemyWrapper;
-int numFriendlies, numEnemies, friendlyCap, enemyCap;
-Wall* wallWrapper;
-int numWalls, wallCap;
+Entity* playerWrapper;
+EntityVector friendlyWrapper, enemyWrapper;
+WallVector wallWrapper;
 
 //skeletal node structure, as defined in the diagram
 
@@ -45,14 +44,13 @@ void initializeVars() {
 	entities = addChild(headNode);
 	teams[0] = addChild(entities);
 	teams[1] = addChild(entities);
-	playerWrapper = blankEntity(addChild(addChild(teams[0])), 25);
+	playerWrapper = blankEntity(addChild(teams[0]), 25);
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
 	camera->y = -3*WindowHeight/4;
 	dummy = addChild(camera);
-	friendlyWrapper = playerWrapper; numFriendlies = friendlyCap = 1;
-	enemyWrapper = NULL; numEnemies = enemyCap = 0;
-	wallWrapper = NULL; numWalls = wallCap = 0;
+	friendlyWrapper.array = playerWrapper;
+	friendlyWrapper.size = friendlyWrapper.cap = 1;
 }
 
 Vector2 screnPos(Node* n) {
@@ -62,24 +60,24 @@ double screnScal(Node* n) {
 	return relativeScale(n, camera);
 }
 void drawGame() {
-	for(int i = 0; i < numFriendlies; i++) {
-		Entity current = friendlyWrapper[i];
+	for(int i = 0; i < friendlyWrapper.size; i++) {
+		Entity current = friendlyWrapper.array[i];
 		DrawCircleV(screnPos(current.loc), screnScal(current.loc) * current.radius, GREEN);
 	}
 	
-	for(int i = 0; i < numEnemies; i++) {
-		Entity current = enemyWrapper[i];
+	for(int i = 0; i < enemyWrapper.size; i++) {
+		Entity current = enemyWrapper.array[i];
 		DrawCircleV(screnPos(current.loc), screnScal(current.loc) * current.radius, RED);
 	}
 
-	for(int i = 0; i < numWalls; i++) {
-		for(int i2 = 1; i2 < wallWrapper[i].loc->size; i2++) {
-			Node* A = wallWrapper[i].loc->children[i2-1];
-			Node* B = wallWrapper[i].loc->children[i2];
+	for(int i = 0; i < wallWrapper.size; i++) {
+		for(int i2 = 1; i2 < wallWrapper.array[i].loc->size; i2++) {
+			Node* A = wallWrapper.array[i].loc->children[i2-1];
+			Node* B = wallWrapper.array[i].loc->children[i2];
 			DrawLineV(screnPos(A), screnPos(B), WHITE);
 		}
-		if(wallWrapper[i].loc->size == 1) {
-			DrawCircleV(screnPos(wallWrapper[i].loc->children[0]), 1, RED);
+		if(wallWrapper.array[i].loc->size == 1) {
+			DrawCircleV(screnPos(wallWrapper.array[i].loc->children[0]), 1, RED);
 		}
 	}
 }
@@ -132,14 +130,12 @@ void drawFrame() {
 		camera->parent->rotation += hmove;
 		SetMousePosition(WindowWidth/2, WindowHeight/2);
 		
-		normalizeVectors(friendlyWrapper, numFriendlies, wallWrapper, numWalls);
-		normalizeVectors(enemyWrapper, numEnemies, wallWrapper, numWalls);
+		normalizeEnts(&friendlyWrapper, &wallWrapper);
+		normalizeEnts(&enemyWrapper, &wallWrapper);
 
-		for(int i = 0; i < numFriendlies; i++) entityTick(friendlyWrapper + i, GetFrameTime());
-		for(int i = 0; i < numEnemies; i++) entityTick(enemyWrapper + i, GetFrameTime());
+		tickEnts(&friendlyWrapper, GetFrameTime());
+		tickEnts(&enemyWrapper, GetFrameTime());
 		
-		purgeEntities(friendlyWrapper, numFriendlies);
-		purgeEntities(enemyWrapper, numEnemies);
 		purgeTree(headNode);
 
 		drawGame();
@@ -162,25 +158,30 @@ void drawFrame() {
 		DrawText("Space to create new wall instance\nClick to add wall vertex\nShift to close shape\nRight click to remove walls", 5, 5, 15, WHITE);
 
 		if(IsKeyPressed(KEY_SPACE)) {
-			if(numWalls == wallCap) {
-				wallCap = wallCap*2+1;
-				wallWrapper = realloc(wallWrapper, wallCap*sizeof(Wall));
-			}
-			memset(wallWrapper+numWalls, 0, sizeof(Wall));
-			wallWrapper[numWalls].loc = addChild(wallsNode);
-			numWalls++;
+			Wall newWall;
+			memset(&newWall, 0, sizeof(Wall));
+			newWall.loc = addChild(wallsNode);
+			pushWall(&wallWrapper, newWall);
+			
+//			if(numWalls == wallCap) {
+//				wallCap = wallCap*2+1;
+//				wallWrapper = realloc(wallWrapper, wallCap*sizeof(Wall));
+//			}
+//			memset(wallWrapper+numWalls, 0, sizeof(Wall));
+//			wallWrapper.array[numWalls].loc = addChild(wallsNode);
+//			numWalls++;
 		}
-		if(IsMouseButtonPressed(0) && numWalls > 0) {
-			Node* location = addChild(wallWrapper[numWalls-1].loc);
-//			Vector2 gamePos = Vector2Scale(GetMousePosition(), camera->parent->scale);
-//			gamePos = Vector2Add(gamePos, localPos(camera, -1));
-//			setOffset(location, gamePos);
+		if(IsMouseButtonPressed(0) && wallWrapper.size > 0) {
+			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
+			Vector2 gamePos = Vector2Scale(GetMousePosition(), camera->parent->scale);
+			gamePos = Vector2Add(gamePos, localPos(camera, -1));
+			setOffset(location, gamePos);
 			setOffset(dummy, GetMousePosition());
 			setOffset(location, localPos(dummy, -1));
 		}
 		if(IsKeyPressed(KEY_LEFT_SHIFT)) {
-			Node* location = addChild(wallWrapper[numWalls-1].loc);
-			setOffset(location, localPos(wallWrapper[numWalls-1].loc->children[0], 1));
+			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
+			setOffset(location, localPos(wallWrapper.array[wallWrapper.size-1].loc->children[0], 1));
 		}
 
 		drawGame();

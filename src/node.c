@@ -31,7 +31,7 @@ Node* addChild(Node* node) {
 //testing: good
 void appendChild(Node* node, Node* child) {
 	if(node->size == node->cap) {
-		node->children = realloc(node->children, 2*node->cap*sizeof(Node*)+1);
+		node->children = realloc(node->children, (1+2*node->cap)*sizeof(Node*));
 		for(int i = node->cap; i < node->cap*2+1; i++) node->children[i] = NULL;
 		node->cap = node->cap*2+1;
 	}
