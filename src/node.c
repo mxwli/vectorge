@@ -76,13 +76,12 @@ void purgeTree(Node* node) {
 		memset(newSet, 0, node->cap*sizeof(Node*));
 		int size = 0;
 		for(int i = 0; i < node->size; i++) {
-			if(node->children[i]->deletionflag) {
-				purgeTree(node->children[i]);
-			}
-			else {
+			
+			if(!node->children[i]->deletionflag) {
 				newSet[size] = node->children[i];
 				size++;
 			}
+			purgeTree(node->children[i]);
 		}
 		free(node->children);
 		node->children = newSet;

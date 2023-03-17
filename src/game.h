@@ -51,7 +51,7 @@ struct EntityStruct {
 	
 
 	int visible;
-	Color displaycolor;
+	Color displayColor;
 	//display information
 
 	float lookDirection;

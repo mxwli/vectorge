@@ -43,7 +43,11 @@ void initializeVars() {
 	headNode = newNode(0, 0, 0, 0);
 	wallsNode = addChild(headNode);
 	entities = addChild(headNode);
-	playerWrapper = blankEntity(addChild(entities), 25);
+	
+	//playerWrapper = blankEntity(addChild(entities), 25);
+
+	playerWrapper = malloc(sizeof(Entity)); *playerWrapper = prototypePlayer(addChild(entities), 0);
+
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
 	camera->y = -3*WindowHeight/4;
@@ -61,7 +65,11 @@ double screnScal(Node* n) {
 void drawGame() {
 	for(int i = 0; i < entityWrapper.size; i++) {
 		Entity current = entityWrapper.array[i];
-		DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius, GREEN);
+		if(current.visible) {
+			DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius, current.displayColor);
+			float f = (float)current.HP/current.maxHP;
+			DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius*f/2, RED);
+		}
 	}
 	
 	for(int i = 0; i < wallWrapper.size; i++) {
@@ -128,7 +136,7 @@ void drawFrame() {
 		functionEnts(entityWrapper, wallWrapper, &entityBuffer, GetFrameTime());
 		normalizeEnts(&entityWrapper, &wallWrapper);
 		tickEnts(&entityWrapper, GetFrameTime());
-		
+		purgeEntities(&entityWrapper);	
 		purgeTree(headNode);
 
 		drawGame();
@@ -178,7 +186,7 @@ void drawFrame() {
 			setOffset(dummy, GetMousePosition());
 			setOffset(newNode, localPos(dummy, -1));
 			pushEntity(&entityWrapper, prototypeSlime(newNode, 1));
-			playerWrapper = &entityWrapper.array[0];
+			playerWrapper = entityWrapper.array;
 		}
 
 		drawGame();

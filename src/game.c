@@ -48,7 +48,7 @@ void pushEntity(EntityVector* ents, Entity val) {
 void tickEnt(Entity* ent, float f) {
 	pushNode(ent->loc, Vector2Scale(ent->vel, f));
 	ent->damage += ent->decayHP*f;
-	ent->HP = fclamp(0, ent->maxHP, ent->HP - ent->damage);
+	ent->HP = fclamp(-1, ent->maxHP, ent->HP - ent->damage);
 	ent->damage = 0;
 }
 
