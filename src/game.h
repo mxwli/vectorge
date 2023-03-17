@@ -54,7 +54,8 @@ struct EntityStruct {
 	Color displaycolor;
 	//display information
 
-	
+	float lookDirection;
+	//misc data, not necessarily used by all entities
 };
 Entity* blankEntity(Node* loc, float rad);
 
@@ -107,8 +108,8 @@ bool interWallLine(Wall a, Vector2 x1, Vector2 x2);						//uses interlineline
 //they return a list of integers pointing to the intersected indecies, terminating with -1
 //there is also a parameter that takes in an entity/wall and returns if it's valid to be intersecting with.
 
-bool defaultEntScan(Entity e) {return 1;}
-bool defaultWallScan(Wall w) {return 1;}
+bool defaultEntScan(Entity e);
+bool defaultWallScan(Wall w);
 
 int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity));
 //scans an array of entities using a line
@@ -126,19 +127,19 @@ Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wa
 //REMEMBER TO DEALLOCATE THE RETURNED MEMORY
 
 
-void functionEnt(Entity* ent, float f);
+void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f);
 //performs entity logic
-
-void functionEnts(EntityVector* ent, float f);
+//the parameters for these two functions are the entity/array of entities, the array of walls, and the entitybuffer, which is an "output" array for entities to spawn new entities into
+void functionEnts(EntityVector ents, WallVector walls, EntityVector* buffer, float f);
 
 /*
 things an entity can do:
 - spawn other entities
 	- best case implementation is one which can spawn any entity anywhere with any configuration of parameters
 	- due to node implementation, adding new nodes should be easy
-- use rays to scan the area
-	- these rays are able to select between different teams and toggle walls
-- modify other entity's health
+- use rays to scan the area - DONE
+	- these rays are able to select between different teams and toggle walls - DONE
+- modify other entity's health - SHOULD BE DONE
 */
 
 

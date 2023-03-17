@@ -1,4 +1,5 @@
 #include "game.h"
+#include "entity.h"
 
 //testing: good
 Wall* blankWall(Node* loc) {
@@ -141,6 +142,9 @@ bool interWallLine(Wall a, Vector2 x1, Vector2 x2) {
 	return ret;
 }
 
+bool defaultEntScan(Entity e) {return 1;}
+bool defaultWallScan(Wall w) {return 1;}
+
 //testing: none
 int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
 	int cnt = 0;
@@ -184,8 +188,9 @@ Vector2 delimitEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(E
 	return Vector2Add(x1, Vector2Scale(x2, h));
 }
 
-Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
+Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall)) {
 	x2 = Vector2Subtract(x2, x1);
+	float l = 0, h = 1;
 	for(int it = 0; it < 15; it++) { //how many times this iterator iterates can be modified
 		bool flag = 0;
 		for(int i = 0; !flag && i < arr.size; i++)
@@ -197,4 +202,23 @@ Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(En
 		else {l = (h+l)/2;}
 	}
 	return Vector2Add(x1, Vector2Scale(x2, h));
+}
+
+void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+	switch(ent->entityType) {
+		case PLAYER:
+			//do nothing, the player receives functionalities externally
+			break;
+		case SLIME:
+			functionSlime(ent, ents, walls, buffer, f);
+			break;
+		default:
+			break;
+	}
+}
+
+void functionEnts(EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+	for(int i = 0; i < ents.size; i++) {
+		functionEnt(ents.array+i, ents, walls, buffer, f);
+	}
 }

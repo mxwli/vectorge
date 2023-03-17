@@ -2,9 +2,9 @@
 cc=gcc
 # cflags=-fdiagnostics-color=always
 
-../bin/run.bin: main.o node.o advvec.o game.o
+../bin/run.bin: main.o node.o advvec.o game.o entity.o
 	clear
-	cc main.o node.o game.o advvec.o -lraylib -ldl -lm -o ../bin/run.bin ${cflags}
+	cc main.o node.o game.o advvec.o entity.o -lraylib -ldl -lm -o ../bin/run.bin ${cflags}
 
 clean:
 	rm *.o
@@ -24,3 +24,6 @@ advvec.o: advvec.c advvec.h
 
 game.o: game.c game.h
 	cc -c game.c -o game.o ${cflags}
+
+entity.o: entity.c entity.h
+	cc -c entity.c entity.o ${cflags}

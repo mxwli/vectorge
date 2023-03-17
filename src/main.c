@@ -10,6 +10,7 @@
 #include"node.h"
 #include"game.h"
 #include"advvec.h"
+#include"entity.h"
 
 int main() {
 	InitWindow(WindowWidth, WindowHeight, "VectorGE");
@@ -30,9 +31,9 @@ int main() {
 
 int WindowState;
 
-Node* headNode, * wallsNode, * entities, * teams[2], * camera, * dummy;
+Node* headNode, * wallsNode, * entities, * camera, * dummy;
 Entity* playerWrapper;
-EntityVector friendlyWrapper, enemyWrapper;
+EntityVector entityWrapper, entityBuffer;
 WallVector wallWrapper;
 
 //skeletal node structure, as defined in the diagram
@@ -42,15 +43,13 @@ void initializeVars() {
 	headNode = newNode(0, 0, 0, 0);
 	wallsNode = addChild(headNode);
 	entities = addChild(headNode);
-	teams[0] = addChild(entities);
-	teams[1] = addChild(entities);
-	playerWrapper = blankEntity(addChild(teams[0]), 25);
+	playerWrapper = blankEntity(addChild(entities), 25);
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
 	camera->y = -3*WindowHeight/4;
 	dummy = addChild(camera);
-	friendlyWrapper.array = playerWrapper;
-	friendlyWrapper.size = friendlyWrapper.cap = 1;
+	entityWrapper.array = playerWrapper;
+	entityWrapper.size = entityWrapper.cap = 1;
 }
 
 Vector2 screnPos(Node* n) {
@@ -60,16 +59,11 @@ double screnScal(Node* n) {
 	return relativeScale(n, camera);
 }
 void drawGame() {
-	for(int i = 0; i < friendlyWrapper.size; i++) {
-		Entity current = friendlyWrapper.array[i];
-		DrawCircleV(screnPos(current.loc), screnScal(current.loc) * current.radius, GREEN);
+	for(int i = 0; i < entityWrapper.size; i++) {
+		Entity current = entityWrapper.array[i];
+		DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius, GREEN);
 	}
 	
-	for(int i = 0; i < enemyWrapper.size; i++) {
-		Entity current = enemyWrapper.array[i];
-		DrawCircleV(screnPos(current.loc), screnScal(current.loc) * current.radius, RED);
-	}
-
 	for(int i = 0; i < wallWrapper.size; i++) {
 		for(int i2 = 1; i2 < wallWrapper.array[i].loc->size; i2++) {
 			Node* A = wallWrapper.array[i].loc->children[i2-1];
@@ -129,12 +123,11 @@ void drawFrame() {
 		float hmove = GetMouseDelta().x/750;
 		camera->parent->rotation += hmove;
 		SetMousePosition(WindowWidth/2, WindowHeight/2);
-		
-		normalizeEnts(&friendlyWrapper, &wallWrapper);
-		normalizeEnts(&enemyWrapper, &wallWrapper);
 
-		tickEnts(&friendlyWrapper, GetFrameTime());
-		tickEnts(&enemyWrapper, GetFrameTime());
+		
+		functionEnts(entityWrapper, wallWrapper, &entityBuffer, GetFrameTime());
+		normalizeEnts(&entityWrapper, &wallWrapper);
+		tickEnts(&entityWrapper, GetFrameTime());
 		
 		purgeTree(headNode);
 
@@ -173,15 +166,19 @@ void drawFrame() {
 		}
 		if(IsMouseButtonPressed(0) && wallWrapper.size > 0) {
 			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
-			Vector2 gamePos = Vector2Scale(GetMousePosition(), camera->parent->scale);
-			gamePos = Vector2Add(gamePos, localPos(camera, -1));
-			setOffset(location, gamePos);
 			setOffset(dummy, GetMousePosition());
 			setOffset(location, localPos(dummy, -1));
 		}
 		if(IsKeyPressed(KEY_LEFT_SHIFT)) {
 			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
 			setOffset(location, localPos(wallWrapper.array[wallWrapper.size-1].loc->children[0], 1));
+		}
+		if(IsKeyPressed(KEY_ONE)) {
+			Node* newNode = addChild(entities);
+			setOffset(dummy, GetMousePosition());
+			setOffset(newNode, localPos(dummy, -1));
+			pushEntity(&entityWrapper, prototypeSlime(newNode, 1));
+			playerWrapper = &entityWrapper.array[0];
 		}
 
 		drawGame();
