@@ -11,6 +11,7 @@
 #include"game.h"
 #include"advvec.h"
 #include"entity.h"
+#include"editor.h"
 
 int main() {
 	InitWindow(WindowWidth, WindowHeight, "VectorGE");
@@ -108,7 +109,7 @@ void drawFrame() {
 		if(IsMouseButtonPressed(0)) {
 			HideCursor();
 			WindowState = INGAME;
-			camera->y = -3*WindowHeight/4;
+			camera->y = -2*WindowHeight/3;
 		}
 		if(IsKeyPressed(KEY_E)) {
 			WindowState = EDITOR;
@@ -140,7 +141,7 @@ void drawFrame() {
 		purgeTree(headNode);
 
 		drawGame();
-		debugTree(headNode);
+		//debugTree(headNode);
 	}
 	else if (WindowState == SETTINGS) {
 		
@@ -149,47 +150,7 @@ void drawFrame() {
 		
 	}
 	else if (WindowState == EDITOR) {
-		if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
-		playerWrapper->vel.x = (IsKeyDown(KEY_D)?900:0)-(IsKeyDown(KEY_A)?900:0);
-		playerWrapper->vel.y = (IsKeyDown(KEY_S)?900:0)-(IsKeyDown(KEY_W)?900:0);
-		camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
-		if(camera->parent->scale < 0.2) camera->parent->scale = 0.2;
-		pushNode(playerWrapper->loc, Vector2Scale(playerWrapper->vel, GetFrameTime()));
-
-		DrawText("Space to create new wall instance\nClick to add wall vertex\nShift to close shape\nRight click to remove walls", 5, 5, 15, WHITE);
-
-		if(IsKeyPressed(KEY_SPACE)) {
-			Wall newWall;
-			memset(&newWall, 0, sizeof(Wall));
-			newWall.loc = addChild(wallsNode);
-			pushWall(&wallWrapper, newWall);
-			
-//			if(numWalls == wallCap) {
-//				wallCap = wallCap*2+1;
-//				wallWrapper = realloc(wallWrapper, wallCap*sizeof(Wall));
-//			}
-//			memset(wallWrapper+numWalls, 0, sizeof(Wall));
-//			wallWrapper.array[numWalls].loc = addChild(wallsNode);
-//			numWalls++;
-		}
-		if(IsMouseButtonPressed(0) && wallWrapper.size > 0) {
-			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
-			setOffset(dummy, GetMousePosition());
-			setOffset(location, localPos(dummy, -1));
-		}
-		if(IsKeyPressed(KEY_LEFT_SHIFT)) {
-			Node* location = addChild(wallWrapper.array[wallWrapper.size-1].loc);
-			setOffset(location, localPos(wallWrapper.array[wallWrapper.size-1].loc->children[0], 1));
-		}
-		if(IsKeyPressed(KEY_ONE)) {
-			Node* newNode = addChild(entities);
-			setOffset(dummy, GetMousePosition());
-			setOffset(newNode, localPos(dummy, -1));
-			pushEntity(&entityWrapper, prototypeSlime(newNode, 1));
-			playerWrapper = entityWrapper.array;
-		}
-
-		drawGame();
+		editorFrame();
 	}
 
 	EndDrawing();

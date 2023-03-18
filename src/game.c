@@ -22,6 +22,12 @@ void pushWall(WallVector* walls, Wall val) {
 	}
 	walls->array[walls->size++] = val;
 }
+void removeWall(WallVector* w, int idx) {
+	for(int i = idx+1; i < w->size; i++) {
+		w->array[i-1] = w->array[i];
+	}
+	w->size--;
+}
 
 //testing: good
 Entity* blankEntity(Node* loc, float rad) {
@@ -43,6 +49,11 @@ void pushEntity(EntityVector* ents, Entity val) {
 		ents->cap = 2*ents->cap+1;
 	}
 	ents->array[ents->size++] = val;
+}
+void removeEntity(EntityVector* ents, int idx) {
+	for(int i = idx+1; i < ents->size; i++)
+		ents->array[i-1] = ents->array[i];
+	ents->size--;
 }
 
 void tickEnt(Entity* ent, float f) {
@@ -85,10 +96,10 @@ void normalizeEnts(EntityVector* ent, WallVector* walls) {
 }
 
 
-//testing: none
+//testing: OK
 void purgeEntities(EntityVector* ent) {
 	Entity* newEnt = malloc(sizeof(Entity)*ent->cap);
-	memset(newEnt, 0, sizeof newEnt);
+	memset(newEnt, 0, sizeof(Entity)*ent->cap);
 	int size = 0;
 	for(int i = 0; i < ent->size; i++) {
 		if(!ent->array[i].invincible && ent->array[i].HP <= 0)
@@ -98,6 +109,20 @@ void purgeEntities(EntityVector* ent) {
 	for(int i = 0; i < size; i++) ent->array[i] = newEnt[i];
 	ent->size = size;
 	free(newEnt);
+}
+
+void purgeWalls(WallVector* walls) {
+	Wall* newWalls = malloc(sizeof(Wall)*walls->cap);
+	memset(newWalls, 0, sizeof(Wall)*walls->cap);
+	int size = 0;
+	for(int i = 0; i < walls->size; i++) {
+		if(walls->array[i].deletion)
+			walls->array[i].loc->deletionflag = 1;
+		else newWalls[size++] = walls->array[i];
+	}
+	for(int i = 0; i < size; i++) walls->array[i] = newWalls[i];
+	walls->size = size;
+	free(newWalls);
 }
 
 //testing: none

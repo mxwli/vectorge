@@ -11,9 +11,15 @@
 #define PAUSE 3
 #define EDITOR 4
 
+#include "node.h"
+
 void initializeVars();
 void destructVars();
 
 void drawFrame();
+void drawGame();
+void debugTree(Node* n);
+Vector2 screnPos(Node* n);
+
 
 #endif

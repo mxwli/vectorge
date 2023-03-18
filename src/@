@@ -16,7 +16,7 @@ struct WallStruct {
 	//the children of loc are the verticies that make up the wall
 
 //wall data
-	bool deletion;
+	
 };
 Wall* blankWall(Node* loc);
 
@@ -70,7 +70,6 @@ struct EntityVect {
 EntityVector* blankEntityVector();
 
 void pushEntity(EntityVector* e, Entity val);
-void removeEntity(EntityVector* ents, int idx);
 
 
 //-----------INTERACTIONS BETWEEN DIFFERENT ENTITIES DEFINED BELOW-------------------\\
@@ -90,9 +89,6 @@ void normalizeEnts(EntityVector* ent, WallVector* walls);
 
 void purgeEntities(EntityVector* ent);
 //removes noninvincible entities and marks their nodes for deletion
-//be sure to purge the node tree afterwards
-void purgeWalls(WallVector* walls);
-//removes walls that are marked for deletion, and then marks their nodes for deletion
 //be sure to purge the node tree afterwards
 
 //TODO ADD INTERACTIONS
