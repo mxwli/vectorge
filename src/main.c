@@ -40,6 +40,7 @@ WallVector wallWrapper;
 //skeletal node structure, as defined in the diagram
 
 void initializeVars() {
+	srand(time(0));
 	WindowState = MAINMENU;
 	headNode = newNode(0, 0, 0, 0);
 	wallsNode = addChild(headNode);
@@ -64,6 +65,7 @@ double screnScal(Node* n) {
 	return relativeScale(n, camera);
 }
 void drawGame() {
+	DrawFPS(1800, 10);
 	for(int i = 0; i < entityWrapper.size; i++) {
 		Entity current = entityWrapper.array[i];
 		if(current.visible) {
@@ -110,6 +112,7 @@ void drawFrame() {
 			HideCursor();
 			WindowState = INGAME;
 			camera->y = -2*WindowHeight/3;
+			camera->parent->rotation = 0;
 		}
 		if(IsKeyPressed(KEY_E)) {
 			WindowState = EDITOR;
@@ -121,18 +124,6 @@ void drawFrame() {
 			WindowState = MAINMENU;
 			ShowCursor();
 		}
-
-		playerWrapper->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
-		playerWrapper->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
-		playerWrapper->vel = Vector2Rotate(playerWrapper->vel, camera->parent->rotation);
-
-		camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
-		if(camera->parent->scale > 5) camera->parent->scale = 5;
-
-		float hmove = GetMouseDelta().x/750;
-		camera->parent->rotation += hmove;
-		SetMousePosition(WindowWidth/2, WindowHeight/2);
-
 		
 		functionEnts(entityWrapper, wallWrapper, &entityBuffer, GetFrameTime());
 		normalizeEnts(&entityWrapper, &wallWrapper);
@@ -142,6 +133,8 @@ void drawFrame() {
 
 		drawGame();
 		//debugTree(headNode);
+		SetMousePosition(WindowWidth/2, WindowHeight/2);
+
 	}
 	else if (WindowState == SETTINGS) {
 		

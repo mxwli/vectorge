@@ -121,6 +121,8 @@ int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)
 int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall));
 //scans an array of walls using a line
 
+//REMEMBER TO DEALLOCATE THE RETURNED MEMORY
+
 //currently the implementation of the following functions are TERRIBLE
 //that's because they binary search how long the line can travel before they encounter an intersection point.
 //running time is nlogn
@@ -129,7 +131,7 @@ Vector2 delimitEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(E
 Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall));
 //finds closest intersection point and returns it.
 
-//REMEMBER TO DEALLOCATE THE RETURNED MEMORY
+
 
 
 void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f);

@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define WindowWidth 1900
+#define WindowWidth 1920
 #define WindowHeight 1000
 #define TargetFPS 60
 

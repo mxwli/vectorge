@@ -4,7 +4,6 @@
 #include "node.h"
 #include "advvec.h"
 
-
 //common things an entity might do
 bool scanForEntities(Entity* ent, EntityVector ents, WallVector walls, bool (*scan)(Entity), float angle) {
 	Vector2 origin = localPos(ent->loc, -1);
@@ -30,6 +29,19 @@ Entity prototypePlayer(Node* loc, int team) {
 	ret.visible = 1;
 	ret.displayColor = SKYBLUE;
 	return ret;
+}
+
+void functionPlayer(Entity* player, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+	Node* camera = player->loc->children[0]->children[0];
+	player->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
+	player->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
+	player->vel = Vector2Rotate(player->vel, camera->parent->rotation);
+
+	camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
+	if(camera->parent->scale > 5) camera->parent->scale = 5;
+
+	float hmove = GetMouseDelta().x/750;
+	camera->parent->rotation += hmove;
 }
 
 
@@ -61,6 +73,8 @@ void functionSlime(Entity* ent, EntityVector ents, WallVector walls, EntityVecto
 			ent->lookDirection += 0.1*i;
 			break;
 		}
-
+	if(ent->vel.x == 0 && ent->vel.y == 0) {
+		ent->lookDirection = 1.618 * rand();
+	}
 }
 

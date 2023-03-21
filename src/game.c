@@ -232,7 +232,7 @@ Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wa
 void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
 	switch(ent->entityType) {
 		case PLAYER:
-			//do nothing, the player receives functionalities externally
+			functionPlayer(ent, ents, walls, buffer, f);
 			break;
 		case SLIME:
 			functionSlime(ent, ents, walls, buffer, f);

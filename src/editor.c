@@ -20,7 +20,7 @@ int EditingMode;
 
 void editorFrame() {
 
-static Vector2 deletionDragBegin, deletionDragEnd;
+	static Vector2 deletionDragBegin, deletionDragEnd;
 
 	if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
 	playerWrapper->vel.x = (IsKeyDown(KEY_D)?900:0)-(IsKeyDown(KEY_A)?900:0);
@@ -95,5 +95,5 @@ static Vector2 deletionDragBegin, deletionDragEnd;
 
 
 	drawGame();
-	debugTree(headNode);
+	//debugTree(headNode);
 }
