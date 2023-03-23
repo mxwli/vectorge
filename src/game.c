@@ -2,16 +2,16 @@
 #include "entity.h"
 
 //testing: good
-Wall* blankWall(Node* loc) {
-	Wall* ret = malloc(sizeof(Wall));
-	memset(ret, 0, sizeof(Wall));
-	ret->loc = loc;
+Wall blankWall(Node* loc) {
+	Wall ret;
+	memset(&ret, 0, sizeof(Wall));
+	ret.loc = loc;
 	return ret;
 }
 
-WallVector* blankWallVector() {
-	WallVector* ret = malloc(sizeof(WallVector));
-	memset(ret, 0, sizeof(WallVector));
+WallVector blankWallVector() {
+	WallVector ret;
+	memset(&ret, 0, sizeof(WallVector));
 	return ret;
 }
 
@@ -30,16 +30,16 @@ void removeWall(WallVector* w, int idx) {
 }
 
 //testing: good
-Entity* blankEntity(Node* loc, float rad) {
-	Entity* ret = malloc(sizeof(Entity));
-	memset(ret, 0, sizeof(Entity));
-	ret->loc = loc; ret->radius = rad;
+Entity blankEntity(Node* loc, float rad) {
+	Entity ret;
+	memset(&ret, 0, sizeof(Entity));
+	ret.loc = loc; ret.radius = rad;
 	return ret;
 }
 
-EntityVector* blankEntityVector() {
-	EntityVector* ret = malloc(sizeof(EntityVector));
-	memset(ret, 0, sizeof(EntityVector));
+EntityVector blankEntityVector() {
+	EntityVector ret;
+	memset(&ret, 0, sizeof(EntityVector));
 	return ret;
 }
 
@@ -229,21 +229,21 @@ Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wa
 	return Vector2Add(x1, Vector2Scale(x2, h));
 }
 
-void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+void functionEnt(Entity* ent, float f) {
 	switch(ent->entityType) {
 		case PLAYER:
-			functionPlayer(ent, ents, walls, buffer, f);
+			functionPlayer(ent, f);
 			break;
 		case SLIME:
-			functionSlime(ent, ents, walls, buffer, f);
+			functionSlime(ent, f);
 			break;
 		default:
 			break;
 	}
 }
 
-void functionEnts(EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+void functionEnts(EntityVector ents, float f) {
 	for(int i = 0; i < ents.size; i++) {
-		functionEnt(ents.array+i, ents, walls, buffer, f);
+		functionEnt(ents.array+i, f);
 	}
 }

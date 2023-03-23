@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include "node.h"
 #include "advvec.h"
+#include "fx.h"
 
 //WALL DEFINITION
 typedef struct WallStruct Wall;
@@ -18,7 +19,7 @@ struct WallStruct {
 //wall data
 	bool deletion;
 };
-Wall* blankWall(Node* loc);
+Wall blankWall(Node* loc);
 
 //VECTOR OF WALLS DEFINITION
 typedef struct WallVect WallVector;
@@ -27,7 +28,7 @@ struct WallVect {
 	int size, cap;
 	//can be thought of as a C++ std::vector<Wall>
 };
-WallVector* blankWallVector();
+WallVector blankWallVector();
 
 void pushWall(WallVector* w, Wall val);
 void removeWall(WallVector* w, int idx);
@@ -58,7 +59,7 @@ struct EntityStruct {
 	float lookDirection;
 	//misc data, not necessarily used by all entities
 };
-Entity* blankEntity(Node* loc, float rad);
+Entity blankEntity(Node* loc, float rad);
 
 //VECTOR OF ENTITIES DEFINITION
 typedef struct EntityVect EntityVector;
@@ -67,7 +68,7 @@ struct EntityVect {
 	int size, cap;
 	//can be thought of as a C++ std::vector<Entity>
 };
-EntityVector* blankEntityVector();
+EntityVector blankEntityVector();
 
 void pushEntity(EntityVector* e, Entity val);
 void removeEntity(EntityVector* ents, int idx);
@@ -134,10 +135,10 @@ Vector2 delimitWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wa
 
 
 
-void functionEnt(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f);
+void functionEnt(Entity* ent, float f);
 //performs entity logic
 //the parameters for these two functions are the entity/array of entities, the array of walls, and the entitybuffer, which is an "output" array for entities to spawn new entities into
-void functionEnts(EntityVector ents, WallVector walls, EntityVector* buffer, float f);
+void functionEnts (EntityVector ents, float f);
 
 /*
 things an entity can do:

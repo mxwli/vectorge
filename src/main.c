@@ -12,6 +12,7 @@
 #include"advvec.h"
 #include"entity.h"
 #include"editor.h"
+#include"fx.h"
 
 int main() {
 	InitWindow(WindowWidth, WindowHeight, "VectorGE");
@@ -36,6 +37,7 @@ Node* headNode, * wallsNode, * entities, * camera, * dummy;
 Entity* playerWrapper;
 EntityVector entityWrapper, entityBuffer;
 WallVector wallWrapper;
+EffectVector effectWrapper, effectBuffer;
 
 //skeletal node structure, as defined in the diagram
 
@@ -125,9 +127,11 @@ void drawFrame() {
 			ShowCursor();
 		}
 		
-		functionEnts(entityWrapper, wallWrapper, &entityBuffer, GetFrameTime());
+		functionEnts(entityWrapper, GetFrameTime());
 		normalizeEnts(&entityWrapper, &wallWrapper);
 		tickEnts(&entityWrapper, GetFrameTime());
+		drawEffects(effectWrapper, GetFrameTime(), camera);
+		purgeEffects(&effectWrapper);
 		purgeEntities(&entityWrapper);	
 		purgeTree(headNode);
 

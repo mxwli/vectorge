@@ -4,14 +4,18 @@
 #include "node.h"
 #include "advvec.h"
 
+extern EntityVector entityWrapper, entityBuffer;
+extern WallVector wallWrapper;
+extern EffectVector effectWrapper, effectBuffer;
+
 //common things an entity might do
-bool scanForEntities(Entity* ent, EntityVector ents, WallVector walls, bool (*scan)(Entity), float angle) {
+bool scanForEntities(Entity* ent, bool (*scan)(Entity), float angle) {
 	Vector2 origin = localPos(ent->loc, -1);
 	Vector2 dest = {10000, 0};
 	dest = Vector2Rotate(dest, angle);
 	dest = Vector2Add(origin, dest);
-	dest = delimitWallsLine(walls, origin, dest, defaultWallScan);
-	int* hits = scanEntsLine(ents, origin, dest, scan);
+	dest = delimitWallsLine(wallWrapper, origin, dest, defaultWallScan);
+	int* hits = scanEntsLine(entityWrapper, origin, dest, scan);
 	bool ret = hits[0] != -1;
 	free(hits);
 	return ret;
@@ -31,7 +35,7 @@ Entity prototypePlayer(Node* loc, int team) {
 	return ret;
 }
 
-void functionPlayer(Entity* player, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+void functionPlayer(Entity* player, float f) {
 	Node* camera = player->loc->children[0]->children[0];
 	player->vel.x = (IsKeyDown(KEY_D)?150:0)-(IsKeyDown(KEY_A)?150:0);
 	player->vel.y = (IsKeyDown(KEY_S)?150:0)-(IsKeyDown(KEY_W)?150:0);
@@ -62,12 +66,12 @@ Entity prototypeSlime(Node* loc, int team) {
 	ret.displayColor = DARKGREEN;
 	return ret;
 }
-void functionSlime(Entity* ent, EntityVector ents, WallVector walls, EntityVector* buffer, float f) {
+
+void functionSlime(Entity* ent, float f) {
 	slimeSelf = *ent;
-	
 	ent->vel = Vector2Zero();
 	for(int i = -7; i <= 7; i++)
-		if(scanForEntities(ent, ents, walls, slimeScan, ent->lookDirection+0.1*i)) {
+		if(scanForEntities(ent, slimeScan, ent->lookDirection+0.1*i)) {
 			ent->vel.x = 100, ent->vel.y = 0;
 			ent->vel = Vector2Rotate(ent->vel, ent->lookDirection+0.1*i);
 			ent->lookDirection += 0.1*i;
@@ -77,4 +81,3 @@ void functionSlime(Entity* ent, EntityVector ents, WallVector walls, EntityVecto
 		ent->lookDirection = 1.618 * rand();
 	}
 }
-
