@@ -61,6 +61,8 @@ void tickEnt(Entity* ent, float f) {
 	ent->damage += ent->decayHP*f;
 	ent->HP = fclamp(-1, ent->maxHP, ent->HP - ent->damage);
 	ent->damage = 0;
+	//ent->delayHP -= ent->maxHP/3*f;
+	//if(ent->delayHP < ent->HP) ent->delayHP = ent->HP;
 }
 
 void tickEnts(EntityVector* ent, float f) {

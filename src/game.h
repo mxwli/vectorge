@@ -47,7 +47,7 @@ struct EntityStruct {
 	//classification data
 
 
-	float maxHP, HP, decayHP, damage;
+	float maxHP, HP, decayHP, damage, delayHP;
 	int invincible;
 	//hit point values
 	

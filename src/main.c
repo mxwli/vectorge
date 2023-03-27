@@ -73,8 +73,11 @@ void drawGame() {
 		Entity current = entityWrapper.array[i];
 		if(current.visible) {
 			DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius, current.displayColor);
+			//float f = (float)current.delayHP/current.maxHP;
+			//DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius*f/2, YELLOW);
 			float f = (float)current.HP/current.maxHP;
 			DrawCircleV(screnPos(current.loc), screnScal(current.loc)*current.radius*f/2, RED);
+			
 		}
 	}
 	
@@ -103,7 +106,7 @@ void debugTree(Node* n) {
 
 void drawFrame() {
 	BeginDrawing();
-	ClearBackground(RAYWHITE);
+	ClearBackground(DARKGRAY);
 	
 	if(WindowState == MAINMENU) {
 		char* welcome = "VectorGE";

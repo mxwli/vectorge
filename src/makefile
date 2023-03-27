@@ -1,6 +1,34 @@
-
+exec=../bin/run.bin
 cc=gcc
-# cflags=-fdiagnostics-color=always
+cflags=-Wall -MMD
+lib=-lraylib -ldl -lm
+src=$(wildcard *.c)
+obj=$(SRC:.c=.o)
+dep=$(obj:.o=.d)
+
+
+${exec}: ${obj}
+	${cc} ${cflags} ${obj} ${lib} -o ${exec}
+
+-include ${dep}
+
+.PHONY: clean cls
+
+clean:
+	rm ${obj}
+	rm ${exec}
+
+cls:
+	clear
+
+run: ${exec}
+	${exec}
+
+vgrind: ${exec}
+	valgrind ${exec}
+
+
+
 
 ../bin/run.bin: main.o node.o advvec.o game.o entity.o editor.o fx.o
 	clear
