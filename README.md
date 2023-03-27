@@ -17,3 +17,13 @@ the individual implementation of:
 - advvec.c
 
 need to be optimized in the future
+
+
+
+
+NOTE: the backbone of this engine - the node tree - is massively overengineered and I suspect it significantly slows down performance.
+
+It was built in a way that was optimizable, so in the future, there are two things we can do
+
+1. use these optimization opportunities
+2. rewrite the whole thing without the node tree
