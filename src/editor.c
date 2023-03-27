@@ -12,7 +12,6 @@
 
 extern int WindowState;
 extern Node* headNode, * wallsNode, * entities, * camera, * dummy;
-extern Entity* playerWrapper;
 extern EntityVector entityWrapper, entityBuffer;
 extern WallVector wallWrapper;
 
@@ -23,6 +22,7 @@ void editorFrame() {
 	static Vector2 deletionDragBegin, deletionDragEnd;
 
 	if(IsKeyPressed(KEY_ESCAPE)) WindowState = MAINMENU;
+	Entity* playerWrapper = entityWrapper.array;
 	playerWrapper->vel.x = (IsKeyDown(KEY_D)?900:0)-(IsKeyDown(KEY_A)?900:0);
 	playerWrapper->vel.y = (IsKeyDown(KEY_S)?900:0)-(IsKeyDown(KEY_W)?900:0);
 	camera->parent->scale /= 1+GetMouseWheelMove()/6.0;
@@ -86,7 +86,6 @@ void editorFrame() {
 				setOffset(dummy, GetMousePosition());
 				setOffset(newNode, localPos(dummy, -1));
 				pushEntity(&entityWrapper, prototypeSlime(newNode, 1));
-				playerWrapper = entityWrapper.array;
 			}
 			break;
 		default:

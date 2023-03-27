@@ -33,8 +33,7 @@ int main() {
 
 int WindowState;
 
-Node* headNode, * wallsNode, * entities, * camera, * dummy;
-Entity* playerWrapper;
+Node* headNode, * wallsNode, * entities, * effects, * camera, * dummy;
 EntityVector entityWrapper, entityBuffer;
 WallVector wallWrapper;
 EffectVector effectWrapper, effectBuffer;
@@ -47,10 +46,12 @@ void initializeVars() {
 	headNode = newNode(0, 0, 0, 0);
 	wallsNode = addChild(headNode);
 	entities = addChild(headNode);
+	effects = addChild(headNode);
 	
 	//playerWrapper = blankEntity(addChild(entities), 25);
 
-	playerWrapper = malloc(sizeof(Entity)); *playerWrapper = prototypePlayer(addChild(entities), 0);
+	Entity* playerWrapper = malloc(sizeof(Entity));
+	*playerWrapper = prototypePlayer(addChild(entities), 0);
 
 	camera = addChild(addChild(playerWrapper->loc));
 	camera->x = -WindowWidth/2;
@@ -87,6 +88,8 @@ void drawGame() {
 			DrawCircleV(screnPos(wallWrapper.array[i].loc->children[0]), 1, RED);
 		}
 	}
+
+	drawEffects(effectWrapper, GetFrameTime(), camera);
 }
 
 void debugTree(Node* n) {
@@ -100,7 +103,7 @@ void debugTree(Node* n) {
 
 void drawFrame() {
 	BeginDrawing();
-	ClearBackground(DARKGRAY);
+	ClearBackground(RAYWHITE);
 	
 	if(WindowState == MAINMENU) {
 		char* welcome = "VectorGE";
@@ -126,16 +129,24 @@ void drawFrame() {
 			WindowState = MAINMENU;
 			ShowCursor();
 		}
+		DrawLine(WindowWidth/2, 0, WindowWidth/2, WindowHeight, GRAY);
 		
 		functionEnts(entityWrapper, GetFrameTime());
 		normalizeEnts(&entityWrapper, &wallWrapper);
 		tickEnts(&entityWrapper, GetFrameTime());
+		drawGame();
 		drawEffects(effectWrapper, GetFrameTime(), camera);
 		purgeEffects(&effectWrapper);
 		purgeEntities(&entityWrapper);	
 		purgeTree(headNode);
 
-		drawGame();
+		for(int i = 0; i < entityBuffer.size; i++) pushEntity(&entityWrapper, entityBuffer.array[i]);
+		free(entityBuffer.array);
+		memset(&entityBuffer, 0, sizeof(EntityVector));
+		for(int i = 0; i < effectBuffer.size; i++) pushEffect(&effectWrapper, effectBuffer.array[i]);
+		free(effectBuffer.array);
+		memset(&effectBuffer, 0, sizeof(EffectVector));
+		
 		//debugTree(headNode);
 		SetMousePosition(WindowWidth/2, WindowHeight/2);
 
@@ -148,6 +159,9 @@ void drawFrame() {
 	}
 	else if (WindowState == EDITOR) {
 		editorFrame();
+	}
+	else if (WindowState == ENDSCREEN) {
+		
 	}
 
 	EndDrawing();

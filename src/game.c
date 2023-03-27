@@ -71,6 +71,7 @@ void tickEnts(EntityVector* ent, float f) {
 
 void normalizeEnt(Entity* ent, WallVector* walls) {
 	int left = 0, right = 0;
+	Vector2 newvel = ent->vel;
 	for(int i = 0; i < walls->size; i++) {
 		Node* loc = walls->array[i].loc;
 		for(int i2 = 1; i2 < loc->size; i2++) {
@@ -81,10 +82,11 @@ void normalizeEnt(Entity* ent, WallVector* walls) {
 			if(Vector2Length(dis) <= ent->radius && Vector2DotProduct(ent->vel, dis) > 0) {
 				if(Vector2CrossProd(ent->vel, dis) < 0) left = 1;
 				else right = 1;
-				ent->vel = projectionNorm(ent->vel, dis);
+				newvel = projectionNorm(ent->vel, dis);
 			}
 		}
 	}
+	ent->vel = newvel;
 	if(left && right) ent->vel = Vector2Zero();
 
 }
@@ -167,10 +169,18 @@ bool interWallLine(Wall a, Vector2 x1, Vector2 x2) {
 	return ret;
 }
 
+bool interWallCircle(Wall a, Vector2 x, float rad) {
+	bool ret = 0;
+	for(int i = 1; !ret && i < a.loc->size; i++) {
+		ret = interCircleLine(x, rad, localPos(a.loc->children[i], -1), localPos(a.loc->children[i-1],-1));
+	}
+	return ret;
+}
+
 bool defaultEntScan(Entity e) {return 1;}
 bool defaultWallScan(Wall w) {return 1;}
 
-//testing: none
+//testing: good
 int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)) {
 	int cnt = 0;
 	for(int i = 0; i < arr.size; i++)
@@ -184,6 +194,22 @@ int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity)
 	return ret;
 }
 
+int* scanEntsCircle(EntityVector arr, Vector2 x, float rad, bool (*scan)(Entity)) {
+	int cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interEntCircle(arr.array[i], x, rad)) cnt++;
+	
+	int* ret = malloc((cnt+1)*sizeof(int));
+	ret[cnt] = -1;
+	cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interEntCircle(arr.array[i], x, rad)) ret[cnt++] = i;
+	
+	return ret;
+}
+
+
+
 //testing: none
 int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall)) {
 	int cnt = 0;
@@ -194,6 +220,19 @@ int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall)) {
 	cnt = 0;
 	for(int i = 0; i < arr.size; i++)
 		if(scan(arr.array[i]) && interWallLine(arr.array[i], x1, x2)) ret[cnt++] = i;
+	return ret;
+}
+
+int* scanWallsCircle(WallVector arr, Vector2 x, float rad, bool (*scan)(Wall)) {
+	int cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interWallCircle(arr.array[i], x, rad)) cnt++;
+	
+	int* ret = malloc((cnt+1)*sizeof(int));
+	ret[cnt] = -1;
+	cnt = 0;
+	for(int i = 0; i < arr.size; i++)
+		if(scan(arr.array[i]) && interWallCircle(arr.array[i], x, rad)) ret[cnt++] = i;
 	return ret;
 }
 
@@ -236,6 +275,9 @@ void functionEnt(Entity* ent, float f) {
 			break;
 		case SLIME:
 			functionSlime(ent, f);
+			break;
+		case ROCKET:
+			functionRocket(ent, f);
 			break;
 		default:
 			break;

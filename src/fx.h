@@ -10,6 +10,9 @@
 #define RAYTYPE 0
 
 
+
+
+
 typedef struct EffectStruct Effect;
 struct EffectStruct {
 	float lifetime, timer, radius; //lifetime of ray before it's removed, internal clock,

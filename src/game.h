@@ -109,6 +109,7 @@ bool interEntLine(Entity a, Vector2 x1, Vector2 x2);					//uses intercircleline
 bool interEntEnt(Entity a, Entity b);									//uses intercirclecircle
 bool interEntWall(Entity a, Wall b);									//uses intercircleline
 bool interWallLine(Wall a, Vector2 x1, Vector2 x2);						//uses interlineline
+bool interWallCircle(Wall a, Vector2 x, float rad);						//uses intercircleline
 
 //the following functions test for intersections in a list of items
 //they return a list of integers pointing to the intersected indecies, terminating with -1
@@ -119,8 +120,12 @@ bool defaultWallScan(Wall w);
 
 int* scanEntsLine(EntityVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Entity));
 //scans an array of entities using a line
+int* scanEntsCircle(EntityVector arr, Vector2 x, float f, bool (*scan)(Entity));
+//scans an array of entities using a circle
+
 int* scanWallsLine(WallVector arr, Vector2 x1, Vector2 x2, bool (*scan)(Wall));
 //scans an array of walls using a line
+int* scanWallsCircle(WallVector arr, Vector2 x, float rad, bool (*scan)(Wall));
 
 //REMEMBER TO DEALLOCATE THE RETURNED MEMORY
 

@@ -32,12 +32,12 @@ void drawEffect(Effect* e, float f, Node* camera) {
 	else {
 		DrawLineEx(relativePos(e->a, camera), relativePos(e->b, camera), realRadius, realColor);
 	}
+	e->timer += f;
 }
 
 void drawEffects(EffectVector fx, float f, Node* camera) {
 	for(int i = 0; i < fx.size; i++) {
 		drawEffect(fx.array + i, f, camera);
-		fx.array[i].timer += f;
 	}
 }
 

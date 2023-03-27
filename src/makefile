@@ -16,6 +16,9 @@ cls:
 run: ../bin/run.bin
 	../bin/run.bin
 
+vgrind: ../bin/run.bin
+	valgrind ../bin/run.bin
+
 main.o: main.c main.h
 	cc -c main.c -o main.o ${cflags}
 
